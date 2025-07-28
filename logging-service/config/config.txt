@@ -1,0 +1,9 @@
+# Logging Service Configuration
+# Edit these values to override defaults. Remove the '#' to activate a line.
+
+LOG_FILE_PATH=logs/audit.log
+LOG_ROTATION_WHEN=midnight   # Options: 'midnight', 'D', 'W0', etc.
+LOG_ROTATION_INTERVAL=1      # How often to rotate (in units of 'when')
+LOG_BACKUP_COUNT=7           # Number of rotated log files to keep
+LOG_ARCHIVE_PATH=logs/archive/
+LOG_PURGE_DAYS=30            # Purge logs older than this many days

@@ -1,22 +1,45 @@
-Alignzo
-An intelligent, multi-tenant platform for unifying people and project operations.
+# Alignzo Testing Suite Monorepo
 
-About The Project
-Alignzo is a modern, microservices-based web application designed to be the single source of truth for a company's internal operations. It provides a centralized hub for managing team structures, project assignments, performance feedback, and more.
+This repository contains the complete testing platform for the Alignzo project, designed to manage, execute, and visualize the results of functional, load, and security tests across the Alignzo microservices ecosystem.
 
-Built with a multi-tenant architecture from the ground up, it can serve multiple companies with complete data isolation, making it a scalable solution for organizations of any size.
+## Monorepo Structure
 
-Key Features in Phase 1:
-Multi-Tenant Architecture: Securely serves multiple companies with complete data segregation.
+```
+.
+├── orchestrator/         # FastAPI backend (Test Orchestration Service)
+├── frontend/             # React (TypeScript) SPA dashboard
+├── runners/              # Test runner containers/scripts
+│   ├── functional/
+│   ├── load/
+│   └── security/
+├── db/                   # Database migrations, seed data, schemas
+├── scripts/              # Utility scripts (aggregation, notifications, etc.)
+├── docker-compose.yml    # For local/dev orchestration
+├── .env.example          # Example environment variables
+└── .github/
+    └── workflows/
+        └── ci.yml        # GitHub Actions pipeline
+```
 
-User & Project Management: A central registry for all employees and company projects.
+## Components
 
-Dynamic Org Chart: Visualize the entire company's reporting structure.
+- **orchestrator/**: FastAPI backend for test management, orchestration, and result aggregation.
+- **frontend/**: React SPA for dashboards, test management, and result visualization.
+- **runners/**: Containerized test runners for functional (Pytest, Playwright), load (k6), and security (ZAP, Trivy) testing.
+- **db/**: Database migrations and seed data for the results database.
+- **scripts/**: Utility scripts for aggregation, notifications, etc.
 
-Escalation Matrices: Define clear, project-specific escalation paths.
+## Getting Started
 
-Performance Feedback: A system for manager ratings and peer-to-peer appreciations.
+1. Clone the repository.
+2. Copy `.env.example` to `.env` and configure environment variables.
+3. Use `docker-compose up --build` to start all services locally.
+4. Access the frontend dashboard at `http://localhost:3000` (default).
 
-Dynamic Feeds & Leaderboards: View real-time user activity feeds and performance leaderboards with powerful sorting and filtering.
+## CI/CD
 
-Universal Search: Quickly find users and projects based on a variety of attributes.
+- Automated via GitHub Actions in `.github/workflows/ci.yml`.
+
+---
+
+For detailed documentation, see the `docs/` folder (to be added).

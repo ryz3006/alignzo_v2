@@ -1,0 +1,80 @@
+services:
+  db:
+    image: postgres:15
+    environment:
+      POSTGRES_USER: alignzo
+      POSTGRES_PASSWORD: alignzo
+      POSTGRES_DB: alignzo_v2
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  logging-service:
+    build: ./logging-service
+    volumes:
+      - ./logging-service/config:/app/config
+      - ./logging-service/logs:/app/logs
+    environment:
+      - LOG_FILE_PATH=logs/audit.log
+      - LOG_ARCHIVE_PATH=logs/archive/
+      - LOG_PURGE_DAYS=30
+      - LOG_ROTATION_WHEN=midnight
+      - LOG_ROTATION_INTERVAL=1
+      - LOG_BACKUP_COUNT=7
+      - DATABASE_URL=postgresql://alignzo:alignzo@db:5432/alignzo_v2
+    depends_on:
+      - db
+    ports:
+      - "8001:8000"
+
+  user-service:
+    build: ./user-service
+    environment:
+      - DATABASE_URL=postgresql://alignzo:alignzo@db:5432/alignzo_v2
+      - LOGGING_SERVICE_URL=http://logging-service:8000/logs/
+    depends_on:
+      - db
+      - logging-service
+    ports:
+      - "8000:8000"
+
+  orchestrator:
+    build: ./orchestrator
+    environment:
+      - DATABASE_URL=postgresql://alignzo:alignzo@db:5432/alignzo_v2
+      - LOGGING_SERVICE_URL=http://logging-service:8000/logs/
+    depends_on:
+      - db
+      - logging-service
+    ports:
+      - "8002:8000"
+
+  project-service:
+    build: ./project-service
+    environment:
+      - DATABASE_URL=postgresql://alignzo:alignzo@db:5432/alignzo_v2
+      - LOGGING_SERVICE_URL=http://logging-service:8000/logs/
+    depends_on:
+      - db
+      - logging-service
+    ports:
+      - "8003:8000"
+
+  api-gateway:
+    build: ./api-gateway
+    environment:
+      - USER_SERVICE_URL=http://user-service:8000
+      - ORCHESTRATOR_URL=http://orchestrator:8000
+      - PROJECT_SERVICE_URL=http://project-service:8000
+      - LOGGING_SERVICE_URL=http://logging-service:8000
+    depends_on:
+      - user-service
+      - orchestrator
+      - project-service
+      - logging-service
+    ports:
+      - "8004:8000"
+
+volumes:
+  pgdata:
